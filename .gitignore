@@ -1,0 +1,8 @@
+node_modules/
+
+# Large dataset files
+q.txt
+uuids.txt
+kaggle.txt
+namemclikers.txt
+names.txt
