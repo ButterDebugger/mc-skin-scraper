@@ -1,4 +1,7 @@
 node_modules/
+novaskin/
+skindex/
+skins/
 
 # Large dataset files
 q.txt
