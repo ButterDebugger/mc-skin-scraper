@@ -9,8 +9,8 @@ Used to filter out duplicates and reformats all uuid lists
 
 *`find_uuids.py`*
 Used to generate uuids using two methods:
-1. *`from_names.py`* Randomly generated usernames to uuids
-2. *`namemc_hearts.py`* Grab uuids from players who heart minecraft servers on NameMC
+1. Randomly generated usernames to uuids
+2. Grab uuids from players who heart minecraft servers on NameMC
 
 *`get_skins.py`*
 Scans through every uuid lists and converts uuids to skins
