@@ -4,9 +4,31 @@ A simple project created in Python with the goal of obtaining an unlimited suppl
 
 ## Getting Started
 
+To get started with the project, follow the steps below:
+
 1. Clone the repository
-2. Install requirements using `pip install -r requirements.txt`
-3. Run `main.py`
+
+    ```bash
+    git clone https://github.com/ButterDebugger/mc-skin-scraper.git
+    ```
+
+2. Navigate inside the project directory
+
+    ```bash
+    cd mc-skin-scraper
+    ```
+
+3. Install the dependencies
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4. Run the program
+
+    ```bash
+    python ./src/main.py
+    ```
 
 ## Lists
 
