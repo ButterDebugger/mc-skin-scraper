@@ -2,69 +2,92 @@ import requests
 from os.path import exists
 import threading
 import time
+import os
 
-# Note: The NovaSkin scraper have been disabled due to NovaSkin's content not always being... skins.
+download_entries = {
+    "skindex": "https://www.minecraftskins.com/skin/download/{id}",
+    "novaskin": "https://minecraft.novaskin.me/skin/{id}/download"
+}
 
-threads = 20 # Number of threads per searchee (x2)
+def worker(entry, start, chunks):
+    folder_path = f"./{entry}/"
+    base_url = download_entries[entry]
 
-def worker(searchee, start, chunks):
-	if searchee == "skindex":
-		folderpath = "./skindex/"
-		baseurl = "https://www.minecraftskins.com/skin/download/{id}"
-	# elif searchee == "novaskin":
-	# 	folderpath = "./novaskin/"
-	# 	baseurl = "https://minecraft.novaskin.me/skin/{id}/download"
-	else:
-		print("Invalid choice.")
-		return
+    skin_id = start
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}
 
-	skinid = start
-	headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}
+    while True:
+        filename = folder_path + str(skin_id)
+        url = base_url.replace("{id}", str(skin_id))
 
-	while True:
-		filename = folderpath + str(skinid)
-		url = baseurl.replace("{id}", str(skinid))
-		
-		# Skip existing
-		if exists(filename + ".png"):
-			skinid += chunks # Increment skin id
-			continue
-		elif exists(filename + ".unavailable"):
-			skinid += chunks # Increment skin id
-			continue
-		
-		# Make download request
-		res = requests.get(url, headers=headers)
-		
-		# Skip unavailable
-		if not res.status_code == 200:
-			open(filename + ".unavailable", "w").write("")
-			skinid += chunks # Increment skin id
-			continue
-		
-		print(searchee + " \t" + str(skinid)) # Print current skin id
-		
-		open(filename + ".png", "wb").write(res.content) # Write image
+        # Skip existing
+        if exists(filename + ".png"):
+            skin_id += chunks # Increment skin id
+            continue
+        elif exists(filename + ".unavailable"):
+            skin_id += chunks # Increment skin id
+            continue
 
-		skinid += chunks # Increment skin id
+        # Make download request
+        res = requests.get(url, headers=headers)
 
-# Start threads
-print("Searching skindex...")
-for j in range(threads):
-	thread = threading.Thread(target=worker, args=["skindex", j, threads])
-	thread.daemon = True
-	thread.start()
+        # Skip unavailable
+        if not res.status_code == 200:
+            open(filename + ".unavailable", "w").write("")
+            skin_id += chunks # Increment skin id
+            continue
 
-# print("Searching novaskin...")
-# for j in range(threads):
-# 	thread = threading.Thread(target=worker, args=["novaskin", j, threads])
-# 	thread.daemon = True
-# 	thread.start()
+        print(entry + " \t" + str(skin_id)) # Print current skin id
 
-# Keep main process alive
-try:
-	while True:
-		time.sleep(1)
-except KeyboardInterrupt:
-	print("Process exited.")
-	pass
+        open(filename + ".png", "wb").write(res.content) # Write image
+
+        skin_id += chunks # Increment skin id
+
+def start_search(entry, threads = 20):
+    print(f"Searching {entry}...")
+
+    # Create folder if it doesn't exist
+    if not exists(f"./{entry}/"):
+        os.makedirs(f"./{entry}/")
+
+    # Start threads
+    for j in range(threads):
+        thread = threading.Thread(target=worker, args=[entry, j, threads])
+        thread.daemon = True
+        thread.start()
+
+    # Keep main process alive
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Process exited.")
+        pass
+
+if __name__ == "__main__":
+    threads = 20
+
+    while True:
+        threads = input("Enter number of threads: ")
+        if threads == "":
+            threads = 20
+
+            print("Using default value of 20.")
+            break
+        elif threads.isdigit():
+            threads = int(threads)
+            break
+        else:
+            print("Invalid number.")
+
+    while True:
+        match input("Search for [S]kindex or [N]ovaskin? ").upper():
+            case "S":
+                start_search("skindex")
+                break
+            case "N":
+                start_search("novaskin")
+                break
+            case _:
+                print("Invalid choice.")
+
