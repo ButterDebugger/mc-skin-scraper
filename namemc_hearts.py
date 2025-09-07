@@ -2,25 +2,27 @@ import requests
 from os.path import exists
 import time
 import re
+from os import makedirs
+from os.path import join
 
 servers = [
-    # "purple.wtf",
-    # "cavepvp.org",
-    # "play.vipermc.net",
-    # "pvp.land",
-    # "mc.hypixel.net",
-    # "akumamc.net",
-    # "play.wildprison.net",
-    # "bridger.land",
-    # "oplegends.com",
-    # "sagepvp.org",
-    # "dynamicpvp.net",
-    # "mcplayhd.net",
-    # "astralmc.cc",
-    # "coldpvp.com",
-    # "lunar.gg",
-    # "minemen.club",
-    # "bwhub.net",
+    "purple.wtf",
+    "cavepvp.org",
+    "play.vipermc.net",
+    "pvp.land",
+    "mc.hypixel.net",
+    "akumamc.net",
+    "play.wildprison.net",
+    "bridger.land",
+    "oplegends.com",
+    "sagepvp.org",
+    "dynamicpvp.net",
+    "mcplayhd.net",
+    "astralmc.cc",
+    "coldpvp.com",
+    "lunar.gg",
+    "minemen.club",
+    "bwhub.net",
     "onlypvp.pl",
     "ghostly.live",
     "greev.eu",
@@ -43,9 +45,18 @@ servers = [
 ]
 
 def grab_likers():
-    with open("./uuids/names.txt", "r") as f:
-        old_uuids = f.read().split("\n")
+    # Create folder if it doesn't exist
+    if not exists("./uuids"):
+        makedirs("./uuids")
 
+    # Read old uuids
+    if exists("./uuids/likers.txt"):
+        with open("./uuids/likers.txt", "r") as f:
+            old_uuids = f.read().split("\n")
+    else:
+        old_uuids = []
+
+    # Get likers from each server
     for server in servers:
         print(server)
 
@@ -63,8 +74,8 @@ def grab_likers():
             break
 
         # Save new uuids
-        with open("namemclikers.txt", "a") as f:
+        with open("./uuids/likers.txt", "a") as f:
             for uuid in likes:
                 if uuid not in old_uuids:
-                    f.write("\n" + re.sub("-", "", uuid))
+                    f.write(re.sub("-", "", uuid) + "\n")
 

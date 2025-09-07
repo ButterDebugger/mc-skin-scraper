@@ -3,6 +3,8 @@ from queue import Queue
 from threading import Thread
 import requests
 import re
+from os import makedirs
+from os.path import exists
 
 def generate_name(length):
     letters = "0123456789abcdefghijklmnopqrstuvwxyz_"
@@ -67,8 +69,16 @@ def worker(backlog, length):
                 backlog.put((name, uuid))
 
 def find_by_names():
-    with open("./uuids/names.txt", "r") as f:
-        uuids = f.read().split("\n")
+    # Create folder and file if it doesn't exist
+    if not exists("./uuids"):
+        makedirs("./uuids")
+
+    # Read old uuids
+    if exists("./uuids/names.txt"):
+        with open("./uuids/names.txt", "r") as f:
+            uuids = f.read().split("\n")
+    else:
+        uuids = []
 
     # Start threads
     q = Queue()
@@ -87,7 +97,7 @@ def find_by_names():
 
                 if not uuid in uuids:
                     print("Found " + name + " -> " + uuid)
-                    f.write("\n" + uuid)
+                    f.write(uuid + "\n")
     except KeyboardInterrupt:
         print("Process exited.")
         pass

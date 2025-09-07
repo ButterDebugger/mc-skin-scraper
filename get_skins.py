@@ -45,36 +45,37 @@ def worker(queue):
 
         queue.task_done()
 
-# Create directory tree
-for x in [*"0123456789abcdef"]:
-    for y in [*"0123456789abcdef"]:
-        dir_path = join("./skins", x + y)
+def main():
+    # Create directory tree
+    for x in [*"0123456789abcdef"]:
+        for y in [*"0123456789abcdef"]:
+            dir_path = join("./skins", x + y)
 
-        if not exists(dir_path):
-            makedirs(dir_path)
+            if not exists(dir_path):
+                makedirs(dir_path)
 
-# Start worker threads
-uuid_queue = Queue(maxsize=0)
-num_threads = 20
+    # Start worker threads
+    uuid_queue = Queue(maxsize=0)
+    num_threads = 20
 
-for i in range(num_threads):
-    thread = Thread(target=worker, args=(uuid_queue,))
-    thread.daemon = True
-    thread.start()
+    for i in range(num_threads):
+        thread = Thread(target=worker, args=(uuid_queue,))
+        thread.daemon = True
+        thread.start()
 
-# Start reading uuids
-has_more = True
-batch_size = num_threads
-uuid_gen = read_uuids()
+    # Start reading uuids
+    has_more = True
+    batch_size = num_threads
+    uuid_gen = read_uuids()
 
-while has_more:
-    try:
-        for x in range(batch_size):
-            uuid_queue.put(next(uuid_gen))
-    except StopIteration:
-        has_more = False
+    while has_more:
+        try:
+            for x in range(batch_size):
+                uuid_queue.put(next(uuid_gen))
+        except StopIteration:
+            has_more = False
 
-    uuid_queue.join()
-    save_depth()
+        uuid_queue.join()
+        save_depth()
 
-    print("Batch done")
+        print("Batch done")

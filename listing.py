@@ -64,7 +64,7 @@ def start_search(entry, threads = 20):
         print("Process exited.")
         pass
 
-if __name__ == "__main__":
+def main():
     threads = 20
 
     while True:
@@ -91,3 +91,5 @@ if __name__ == "__main__":
             case _:
                 print("Invalid choice.")
 
+if __name__ == "__main__":
+    main()
