@@ -21,7 +21,7 @@ if __name__ == "__main__":
                     find_by_names()
                     break
                 case "2":
-                    from namemc_hearts import grab_likers
+                    from namemc_likes import grab_likers
 
                     grab_likers()
                     break
